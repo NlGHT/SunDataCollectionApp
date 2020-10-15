@@ -9,6 +9,7 @@ import android.widget.ArrayAdapter
 import kotlinx.android.synthetic.main.activity_main.*
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
+import android.util.Log
 import android.view.View
 import android.widget.TextView
 
@@ -31,6 +32,9 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
         if (event != null && resume) {
             if (event.sensor.type == Sensor.TYPE_ACCELEROMETER) {
                 findViewById<TextView>(R.id.Acc_value).text = "ACCELEROMETER: "+event.values[0].toString()
+                val accelvalue = event.values[0].toString();
+                Log.v("accel value",""+accelvalue.toString())
+
             }
             if (event.sensor.type == Sensor.TYPE_PROXIMITY) {
                 findViewById<TextView>(R.id.prox_value).text = "PROXIMITY: "+event.values[0].toString()
