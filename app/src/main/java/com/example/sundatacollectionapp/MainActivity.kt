@@ -22,9 +22,9 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class MainActivity : AppCompatActivity(), SensorEventListener {
-    private lateinit var sensorManager: SensorManager
     private val REQUEST_IMAGE_CAPTURE = 1
     private lateinit var currentPhotoPath: String
+
     private lateinit var mSensorManager : SensorManager
     private var sAccelerometer : Sensor ?= null
     private var vAccellerometer = FloatArray(3)
@@ -41,6 +41,27 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
     private var sGravity : Sensor ?= null
     private var mGravity = FloatArray(3)
     private var resume = false;
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        setSupportActionBar(findViewById(R.id.toolbar))
+
+        findViewById<FloatingActionButton>(R.id.fab).setOnClickListener { view ->
+            dispatchTakePictureIntent()
+        }
+
+        mSensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
+
+        // Using TYPE_ORIENTATION is deprecated and replaced with TYPE_ROTATION_VECTOR
+        sRotationVectors = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR)
+        sAmbientLight = mSensorManager.getDefaultSensor(Sensor.TYPE_LIGHT)
+        sMagneticField = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)
+        sGravity = mSensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY)
+        sGyroscope = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE)
+        sAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
+        sAmbTemp = mSensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE)
+    }
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
         return
@@ -72,27 +93,6 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
         mSensorManager.registerListener(this, sGyroscope, SensorManager.SENSOR_DELAY_NORMAL)
         mSensorManager.registerListener(this, sAccelerometer, SensorManager.SENSOR_DELAY_NORMAL)
         mSensorManager.registerListener(this, sAmbTemp, SensorManager.SENSOR_DELAY_NORMAL)
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        setSupportActionBar(findViewById(R.id.toolbar))
-
-        findViewById<FloatingActionButton>(R.id.fab).setOnClickListener { view ->
-            dispatchTakePictureIntent()
-        }
-
-        mSensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
-
-        // Using TYPE_ORIENTATION is deprecated and replaced with TYPE_ROTATION_VECTOR
-        sRotationVectors = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR)
-        sAmbientLight = mSensorManager.getDefaultSensor(Sensor.TYPE_LIGHT)
-        sMagneticField = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)
-        sGravity = mSensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY)
-        sGyroscope = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE)
-        sAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
-        sAmbTemp = mSensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE)
     }
 
     private fun dispatchTakePictureIntent() {
