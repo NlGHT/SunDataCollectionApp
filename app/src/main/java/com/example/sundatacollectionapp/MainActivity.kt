@@ -29,7 +29,6 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
     private var sAccelerometer : Sensor ?= null
     private var vAccellerometer = FloatArray(3)
     private var sRotationVectors : Sensor ?= null
-    // Rotation Matrices
     private val rotationMatrix = FloatArray(9)
     private var sAmbTemp : Sensor ?= null
     private var fAmbTemp : Float ?= 0.0f
@@ -94,8 +93,6 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
         sGyroscope = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE)
         sAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
         sAmbTemp = mSensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE)
-
-//        vOrientation = Array<Float>(5)
     }
 
     private fun dispatchTakePictureIntent() {
