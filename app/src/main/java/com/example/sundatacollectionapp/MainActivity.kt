@@ -1,46 +1,62 @@
 package com.example.sundatacollectionapp
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 
-class MainActivity : AppCompatActivity(), SensorEventListener {
+class MainActivity : AppCompatActivity(), SensorEventListener  {
     private val REQUEST_IMAGE_CAPTURE = 1
     private lateinit var currentPhotoPath: String
 
-    private lateinit var mSensorManager : SensorManager
-    private var sAccelerometer : Sensor ?= null
+    private lateinit var mSensorManager: SensorManager
+    private var sAccelerometer: Sensor? = null
     private var vAccellerometer = FloatArray(3)
-    private var sRotationVectors : Sensor ?= null
+    private var sRotationVectors: Sensor? = null
     private val rotationMatrix = FloatArray(9)
-    private var sAmbTemp : Sensor ?= null
-    private var fAmbTemp : Float ?= 0.0f
-    private var sAmbientLight : Sensor ?= null
-    private var fAmbientLight : Float ?= 0.0f
-    private var sGyroscope : Sensor ?= null
-    private var vGyroscope  = FloatArray(3)
-    private var sMagneticField : Sensor ?= null
+    private var sAmbTemp: Sensor? = null
+    private var fAmbTemp: Float? = 0.0f
+    private var sAmbientLight: Sensor? = null
+    private var fAmbientLight: Float? = 0.0f
+    private var sGyroscope: Sensor? = null
+    private var vGyroscope = FloatArray(3)
+    private var sMagneticField: Sensor? = null
     private var mMagneticField = FloatArray(3)
-    private var sGravity : Sensor ?= null
+    private var sGravity: Sensor? = null
     private var mGravity = FloatArray(3)
     private var resume = false;
+
+    private lateinit var locationManager: LocationManager
+    private lateinit var locationListener: LocationListener
+    private val locationPermissionCode = 2
+    private var latitude: Double? = 0.0
+    private var longitude: Double? = 0.0
+    private var gpsRunning = false;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,6 +77,99 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
         sGyroscope = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE)
         sAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
         sAmbTemp = mSensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE)
+
+        // Location
+        locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        locationListener = object : LocationListener {
+            override fun onLocationChanged(location: Location) {
+                // This will be called when the location changes as by minTime and minDistance set
+                // on creation (see startLocation()->else)
+                locationChanged(location)
+            }
+
+            override fun onStatusChanged( provider: String, status: Int, extras: Bundle ) { }
+            override fun onProviderEnabled(provider: String) {}
+            override fun onProviderDisabled(provider: String) {}
+        }
+    }
+
+    private fun startLocation() {
+        Log.v("startLocation()", "Called")
+
+        // First check if the app has the location permissions allowed
+        if ((ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED)
+        ) {
+            // If permission to use location has not been granted, then request them
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                locationPermissionCode
+            )
+
+            // Callback is set for responding to the permissions request popup
+            ActivityCompat.OnRequestPermissionsResultCallback {
+                    requestCode,
+                    permissions,
+                    grantResults ->
+                // This will run after the permission request has been allowed/denied
+                startLocation()
+            }
+        } else {
+            // If the permission has been granted then check is the GPS has been turned on
+            if (isGPSOn()) {
+                // Start receiving location updates using the locationListner defined in onCreate
+                // for all the callbacks
+                locationManager.requestLocationUpdates(
+                    LocationManager.GPS_PROVIDER,
+                    1000,
+                    5f,
+                    locationListener
+                )
+
+                // Set the global var that the GPS is running
+                gpsRunning = true;
+                Log.v("startLocation()", "Location updates started...")
+            } else {
+                // If the GPS is not turned on the user will need to turn it on and reload this function
+                // (Maybe there is a way to do this programmatically idk but it works fine)
+                Toast.makeText(
+                    this,
+                    "Turn on GPS and reload/restart/refocus app.",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
+    }
+
+    // This is run when the permission popup box is answered e.g location
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        // Check if permission for location granted
+        if (requestCode == locationPermissionCode) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun isGPSOn() : Boolean {
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+    }
+
+    private fun locationChanged(location: Location) {
+        // This will be called from the locationListener's instantiation in onCreate()
+        this.latitude = location.latitude
+        this.longitude = location.longitude
+        Log.v("locationChanged", "Longitude recorded: " + this.longitude.toString())
+        Log.v("locationChanged", "Latitude recorded: " + this.latitude.toString())
     }
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
@@ -93,6 +202,17 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
         mSensorManager.registerListener(this, sGyroscope, SensorManager.SENSOR_DELAY_NORMAL)
         mSensorManager.registerListener(this, sAccelerometer, SensorManager.SENSOR_DELAY_NORMAL)
         mSensorManager.registerListener(this, sAmbTemp, SensorManager.SENSOR_DELAY_NORMAL)
+
+        startLocation()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        if (!gpsRunning)
+            if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
+                locationManager.removeUpdates(locationListener)
+                gpsRunning = true;
+            }
     }
 
     private fun dispatchTakePictureIntent() {
