@@ -203,13 +203,19 @@ class MainActivity : AppCompatActivity(), SensorEventListener  {
         mSensorManager.registerListener(this, sAccelerometer, SensorManager.SENSOR_DELAY_NORMAL)
         mSensorManager.registerListener(this, sAmbTemp, SensorManager.SENSOR_DELAY_NORMAL)
 
+        // Start the location updates when entering the app again
         startLocation()
     }
 
     override fun onPause() {
         super.onPause()
         if (!gpsRunning)
-            if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                // Stop the location recording outside the app
                 locationManager.removeUpdates(locationListener)
                 gpsRunning = true;
             }
