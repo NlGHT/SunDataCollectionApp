@@ -61,14 +61,93 @@ class MainActivity2 : AppCompatActivity() {
     private var longitude: Double? = 0.0
     private var gpsRunning = false;
 
+    private var i = 0
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main2)
         setSupportActionBar(findViewById(R.id.toolbar))
         //val intent = intent
-        val sunFile: String?  = intent.getStringExtra("sunTime")
-        Log.v("haha", "" + sunFile)
 
+        //findViewById<Button>(R.id.btnCamera).setOnClickListener { view ->
+        //            dispatchTakePictureIntent()
+
+        findViewById<Button>(R.id.btnPic).setOnClickListener { view ->
+            dispatchTakePictureIntent()
+
+            val sunFile: String? = intent.getStringExtra("sunTime")
+            Log.v("haha", "" + sunFile)
+            timesun = sunFile
+
+        }
+    }
+
+    private fun dispatchTakePictureIntent() {
+        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
+            // Ensure that there's a camera activity to handle the intent
+            takePictureIntent.resolveActivity(packageManager)?.also {
+                // Create the File where the photo should go
+                val photoFile: File? = try {
+                    createImageFile()
+                } catch (ex: IOException) {
+                    // Error occurred while creating the File
+                    null
+                }
+                // Continue only if the File was successfully created
+                photoFile?.also {
+                    val photoURI: Uri = FileProvider.getUriForFile(
+                        this,
+                        BuildConfig.APPLICATION_ID + ".provider",
+                        it
+                    )
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+                    startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
+                }
+
+                galleryAddPic()
+            }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            //Log.v("pls work", "it does")
+            //val intent = Intent(this, MainActivity2::class.java)
+            //intent.putExtra("sunTime", timesun)
+            //startActivity(intent)
+            //startActivity(intentOK)
+            // Save the data in here
+        }
+    }
+
+    @Throws(IOException::class)
+    private fun createImageFile(): File {
+        // Create an image file name
+
+        //val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+        val storageDir: File? = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        i++
+        //timesun = timeStamp
+        //val intent = Intent(this@MainActivity,MainActivity2::class.java)
+        //intent.putExtra("SunTime",timesun)
+        //startActivity(intent)
+        return File.createTempFile(
+            "PIC_${i}_${timesun}_", /* prefix */
+            ".jpg", /* suffix */
+            storageDir /* directory */
+        ).apply {
+            // Save a file: path for use with ACTION_VIEW intents
+            currentPhotoPath = absolutePath
+        }
+    }
+
+    private fun galleryAddPic() {
+        Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE).also { mediaScanIntent ->
+            val f = File(currentPhotoPath)
+            mediaScanIntent.data = Uri.fromFile(f)
+            sendBroadcast(mediaScanIntent)
+        }
     }
 }

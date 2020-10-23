@@ -261,7 +261,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener  {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             Log.v("pls work", "it does")
             val intent = Intent(this, MainActivity2::class.java)
-            intent.putExtra("sunTime", "" + timesun)
+            intent.putExtra("sunTime", timesun)
             startActivity(intent)
             //startActivity(intentOK)
             // Save the data in here
@@ -275,11 +275,12 @@ class MainActivity : AppCompatActivity(), SensorEventListener  {
         val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
         val storageDir: File? = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
         timesun = timeStamp
+        Log.v("suntime", "" + timeStamp)
         //val intent = Intent(this@MainActivity,MainActivity2::class.java)
         //intent.putExtra("SunTime",timesun)
         //startActivity(intent)
         return File.createTempFile(
-            "SUN_${timeStamp}_", /* prefix */
+            "SUN_${timeStamp}", /* prefix */
             ".jpg", /* suffix */
             storageDir /* directory */
         ).apply {
