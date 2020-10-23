@@ -32,8 +32,6 @@ import java.util.*
 
 
 class MainActivity2 : AppCompatActivity() {
-    //val sunFile: String?  =intent.getStringExtra("SunTime")
-
     private val REQUEST_IMAGE_CAPTURE = 1
     private lateinit var currentPhotoPath: String
     private var timesun: String? = null
@@ -68,5 +66,9 @@ class MainActivity2 : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main2)
         setSupportActionBar(findViewById(R.id.toolbar))
+        //val intent = intent
+        val sunFile: String?  = intent.getStringExtra("sunTime")
+        Log.v("haha", "" + sunFile)
+
     }
 }

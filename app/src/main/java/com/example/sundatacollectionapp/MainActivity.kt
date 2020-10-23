@@ -261,7 +261,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener  {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             Log.v("pls work", "it does")
             val intent = Intent(this, MainActivity2::class.java)
-            //intent.putExtra("sunTime", timesun)
+            intent.putExtra("sunTime", "" + timesun)
             startActivity(intent)
             //startActivity(intentOK)
             // Save the data in here
