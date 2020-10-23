@@ -279,12 +279,17 @@ class MainActivity : AppCompatActivity(), SensorEventListener  {
         //val intent = Intent(this@MainActivity,MainActivity2::class.java)
         //intent.putExtra("SunTime",timesun)
         //startActivity(intent)
-        return File.createTempFile(
+        /*return File.createTempFile(
             "SUN_${timeStamp}", /* prefix */
             ".jpg", /* suffix */
             storageDir /* directory */
         ).apply {
             // Save a file: path for use with ACTION_VIEW intents
+            currentPhotoPath = absolutePath
+        }
+         */
+        return  File(storageDir, "SUN_${timeStamp}" + ".jpg"
+        ).apply {
             currentPhotoPath = absolutePath
         }
     }

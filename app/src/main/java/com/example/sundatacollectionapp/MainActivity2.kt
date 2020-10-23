@@ -75,10 +75,12 @@ class MainActivity2 : AppCompatActivity() {
 
         findViewById<Button>(R.id.btnPic).setOnClickListener { view ->
             dispatchTakePictureIntent()
-
+            /*
             val sunFile: String? = intent.getStringExtra("sunTime")
             Log.v("haha", "" + sunFile)
             timesun = sunFile
+
+             */
 
         }
     }
@@ -124,21 +126,14 @@ class MainActivity2 : AppCompatActivity() {
 
     @Throws(IOException::class)
     private fun createImageFile(): File {
-        // Create an image file name
 
-        //val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
         val storageDir: File? = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
         i++
-        //timesun = timeStamp
-        //val intent = Intent(this@MainActivity,MainActivity2::class.java)
-        //intent.putExtra("SunTime",timesun)
-        //startActivity(intent)
-        return File.createTempFile(
-            "PIC_${i}_${timesun}_", /* prefix */
-            ".jpg", /* suffix */
-            storageDir /* directory */
+        val sunFile: String? = intent.getStringExtra("sunTime")
+        Log.v("haha", "" + sunFile)
+        timesun = sunFile
+        return  File(storageDir, "PIC_${i}_${timesun}" + ".jpg"
         ).apply {
-            // Save a file: path for use with ACTION_VIEW intents
             currentPhotoPath = absolutePath
         }
     }
