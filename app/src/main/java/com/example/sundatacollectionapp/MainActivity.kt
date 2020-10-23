@@ -18,6 +18,7 @@ import android.provider.MediaStore
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -63,8 +64,12 @@ class MainActivity : AppCompatActivity(), SensorEventListener  {
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.toolbar))
 
-        findViewById<FloatingActionButton>(R.id.fab).setOnClickListener { view ->
+        //findViewById<Button>(R.id.btnCamera).setOnClickListener { view ->
+        //            dispatchTakePictureIntent()
+
+        findViewById<Button>(R.id.btnSun).setOnClickListener { view ->
             dispatchTakePictureIntent()
+
         }
 
         mSensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
