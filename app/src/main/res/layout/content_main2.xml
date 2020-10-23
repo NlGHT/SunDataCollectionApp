@@ -7,15 +7,17 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
     <Button
-        android:id="@+id/btnSun"
+        android:id="@+id/btnReSun"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center|center"
-        android:text="Sun"
+        android:text="Restart Sun"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/nav_host_fragment"
+        app:layout_constraintHorizontal_bias="0.252"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.499" />
 
     <fragment
         android:id="@+id/nav_host_fragment"
@@ -30,5 +32,17 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0"
         app:navGraph="@navigation/nav_graph" />
+
+    <Button
+        android:id="@+id/btnPic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Take Pic"
+        app:layout_constraintBottom_toBottomOf="@+id/nav_host_fragment"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.798"
+        app:layout_constraintStart_toStartOf="@+id/nav_host_fragment"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.499" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

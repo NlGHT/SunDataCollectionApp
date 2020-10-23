@@ -19,13 +19,11 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Button
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -34,7 +32,8 @@ import java.util.*
 class MainActivity : AppCompatActivity(), SensorEventListener  {
     private val REQUEST_IMAGE_CAPTURE = 1
     private lateinit var currentPhotoPath: String
-
+    private var timesun: String? = null
+    private val intentOK = Intent(this, MainActivity2::class.java)
     private lateinit var mSensorManager: SensorManager
     private var sAccelerometer: Sensor? = null
     private var vAccellerometer = FloatArray(3)
@@ -59,6 +58,8 @@ class MainActivity : AppCompatActivity(), SensorEventListener  {
     private var longitude: Double? = 0.0
     private var gpsRunning = false;
 
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -66,6 +67,8 @@ class MainActivity : AppCompatActivity(), SensorEventListener  {
 
         //findViewById<Button>(R.id.btnCamera).setOnClickListener { view ->
         //            dispatchTakePictureIntent()
+
+
 
         findViewById<Button>(R.id.btnSun).setOnClickListener { view ->
             dispatchTakePictureIntent()
@@ -256,7 +259,11 @@ class MainActivity : AppCompatActivity(), SensorEventListener  {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-
+            Log.v("pls work", "it does")
+            val intent = Intent(this, MainActivity2::class.java)
+            //intent.putExtra("sunTime", timesun)
+            startActivity(intent)
+            //startActivity(intentOK)
             // Save the data in here
         }
     }
@@ -264,10 +271,15 @@ class MainActivity : AppCompatActivity(), SensorEventListener  {
     @Throws(IOException::class)
     private fun createImageFile(): File {
         // Create an image file name
+
         val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
         val storageDir: File? = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        timesun = timeStamp
+        //val intent = Intent(this@MainActivity,MainActivity2::class.java)
+        //intent.putExtra("SunTime",timesun)
+        //startActivity(intent)
         return File.createTempFile(
-            "JPEG_${timeStamp}_", /* prefix */
+            "SUN_${timeStamp}_", /* prefix */
             ".jpg", /* suffix */
             storageDir /* directory */
         ).apply {
