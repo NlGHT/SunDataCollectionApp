@@ -18,6 +18,7 @@ import android.provider.MediaStore
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -68,13 +69,16 @@ class MainActivity2 : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main2)
         setSupportActionBar(findViewById(R.id.toolbar))
-        //val intent = intent
 
-        //findViewById<Button>(R.id.btnCamera).setOnClickListener { view ->
-        //            dispatchTakePictureIntent()
+        val resetSun = findViewById<Button>(R.id.btnReSun)
+        resetSun.setOnClickListener{
+            val intentReset = Intent(this, MainActivity::class.java)
+            startActivity(intentReset)
+        }
 
         findViewById<Button>(R.id.btnPic).setOnClickListener { view ->
             dispatchTakePictureIntent()
+
             /*
             val sunFile: String? = intent.getStringExtra("sunTime")
             Log.v("haha", "" + sunFile)
