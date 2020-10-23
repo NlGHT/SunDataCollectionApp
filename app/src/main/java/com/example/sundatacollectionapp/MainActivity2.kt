@@ -36,8 +36,6 @@ class MainActivity2 : AppCompatActivity(), SensorEventListener {
     private val REQUEST_IMAGE_CAPTURE = 1
     private lateinit var currentPhotoPath: String
     private var timesun: String? = null
-
-    //private val intentOK = Intent(this, MainActivity2::class.java)
     private lateinit var mSensorManager: SensorManager
     private var sAccelerometer: Sensor? = null
     private var vAccellerometer = FloatArray(3)
@@ -54,7 +52,6 @@ class MainActivity2 : AppCompatActivity(), SensorEventListener {
     private var sGravity: Sensor? = null
     private var mGravity = FloatArray(3)
     private var resume = false;
-
     private lateinit var locationManager: LocationManager
     private lateinit var locationListener: LocationListener
     private val locationPermissionCode = 2
@@ -70,21 +67,18 @@ class MainActivity2 : AppCompatActivity(), SensorEventListener {
         setContentView(R.layout.activity_main2)
         setSupportActionBar(findViewById(R.id.toolbar))
 
+        // Reset sun button, take you to main activity again
         val resetSun = findViewById<Button>(R.id.btnReSun)
         resetSun.setOnClickListener{
             val intentReset = Intent(this, MainActivity::class.java)
             startActivity(intentReset)
         }
 
+        //Take next pictrue for the same sun
         findViewById<Button>(R.id.btnPic).setOnClickListener { view ->
             dispatchTakePictureIntent() }
 
-            /*
-            val sunFile: String? = intent.getStringExtra("sunTime")
-            Log.v("haha", "" + sunFile)
-            timesun = sunFile
 
-             */
         mSensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
 
         // Using TYPE_ORIENTATION is deprecated and replaced with TYPE_ROTATION_VECTOR
@@ -269,12 +263,7 @@ class MainActivity2 : AppCompatActivity(), SensorEventListener {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            //Log.v("pls work", "it does")
-            //val intent = Intent(this, MainActivity2::class.java)
-            //intent.putExtra("sunTime", timesun)
-            //startActivity(intent)
-            //startActivity(intentOK)
-            // Save the data in here
+
         }
     }
 
@@ -282,10 +271,9 @@ class MainActivity2 : AppCompatActivity(), SensorEventListener {
     private fun createImageFile(): File {
 
         val storageDir: File? = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-        i++
         val sunFile: String? = intent.getStringExtra("sunTime")
-        Log.v("haha", "" + sunFile)
         timesun = sunFile
+        i++
         return  File(storageDir, "PIC_${i}_${timesun}" + ".jpg"
         ).apply {
             currentPhotoPath = absolutePath
