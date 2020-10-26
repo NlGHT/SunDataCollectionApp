@@ -272,7 +272,8 @@ class MainActivity : AppCompatActivity(), SensorEventListener  {
         val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
         val storageDir: File? = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
         timesun = timeStamp
-        return  File(storageDir, "SUN_${timeStamp}" + ".jpg"
+        val fileName: String? = "SUN_${timeStamp}"
+        return  File(storageDir, fileName + ".jpg"
         ).apply {
             currentPhotoPath = absolutePath
         }

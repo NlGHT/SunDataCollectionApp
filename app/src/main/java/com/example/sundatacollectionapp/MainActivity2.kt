@@ -274,7 +274,8 @@ class MainActivity2 : AppCompatActivity(), SensorEventListener {
         val sunFile: String? = intent.getStringExtra("sunTime")
         timesun = sunFile
         i++
-        return  File(storageDir, "PIC_${i}_${timesun}" + ".jpg"
+        val picFileName: String? = "PIC_${i}_${timesun}"
+        return  File(storageDir, picFileName + ".jpg"
         ).apply {
             currentPhotoPath = absolutePath
         }
