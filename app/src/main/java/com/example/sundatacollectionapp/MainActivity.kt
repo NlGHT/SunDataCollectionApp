@@ -33,7 +33,6 @@ class MainActivity : AppCompatActivity(), SensorEventListener  {
     private val REQUEST_IMAGE_CAPTURE = 1
     private lateinit var currentPhotoPath: String
     private var timesun: String? = null
-    private val intentOK = Intent(this, MainActivity2::class.java)
     private lateinit var mSensorManager: SensorManager
     private var sAccelerometer: Sensor? = null
     private var vAccellerometer = FloatArray(3)
