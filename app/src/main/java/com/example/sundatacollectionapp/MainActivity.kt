@@ -25,6 +25,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import java.io.File
+import java.io.FileWriter
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -255,13 +256,125 @@ class MainActivity : AppCompatActivity(), SensorEventListener  {
         }
     }
 
+    private fun SaveData(sunName: String, imageName: String ){
+
+        var fileWriter: FileWriter? = null
+        val fileName = "Sensor.csv"
+
+        var file = File(fileName)
+
+        // create a new file
+        val isNewFileCreated :Boolean = file.createNewFile()
+
+        if(isNewFileCreated){
+            Log.v("filewriter", "$fileName is created successfully.")
+        } else{
+            Log.v("filewriter", "$fileName already exists.")
+        }
+
+        try {
+            fileWriter = FileWriter("Sensor.csv")
+            fileWriter.append(sunName)
+            fileWriter.append(',')
+            fileWriter.append(imageName)
+            fileWriter.append(',')
+
+            if (sAccelerometer != null) {
+                val accel = "%.2f".format(vAccellerometer)
+                fileWriter.append(accel)
+            } else {
+                fileWriter.append("0")
+            }
+            fileWriter.append(',')
+
+            if (sRotationVectors != null) {
+                val rotation = "%.2f".format(rotationMatrix)
+                fileWriter.append(rotation)
+            }else {
+                fileWriter.append("0")
+            }
+            fileWriter.append(',')
+
+            if (sAmbTemp != null) {
+                val ambTemp = "%.2f".format(fAmbTemp)
+                fileWriter.append(ambTemp)
+            }else {
+                fileWriter.append("0")
+            }
+            fileWriter.append(',')
+
+            if (sAmbientLight != null) {
+                val ambLight = "%.2f".format(fAmbientLight)
+                fileWriter.append(ambLight)
+            }else {
+                fileWriter.append("0")
+            }
+            fileWriter.append(',')
+
+            if (sGyroscope != null) {
+                val gyro = "%.2f".format(vGyroscope)
+                fileWriter.append(gyro)
+            }else {
+                fileWriter.append("0")
+            }
+            fileWriter.append(',')
+
+            if (sMagneticField != null) {
+                val magnetic = "%.2f".format(mMagneticField)
+                fileWriter.append(magnetic)
+            }else {
+                fileWriter.append("0")
+            }
+            fileWriter.append(',')
+
+            if (sGravity != null) {
+                val gravity = "%.2f".format(mGravity)
+                fileWriter.append(gravity)
+            }else {
+                fileWriter.append("0")
+            }
+            fileWriter.append(',')
+
+            if (gpsRunning) {
+                val lati = "%.2f".format(latitude)
+                fileWriter.append(lati)
+                fileWriter.append(',')
+                val longi = "%.2f".format(longitude)
+                fileWriter.append(longi)
+            }else {
+                fileWriter.append("0")
+                fileWriter.append(',')
+                fileWriter.append("0")
+            }
+            fileWriter.append(',')
+            val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+            fileWriter.append(timeStamp)
+            fileWriter.append('\n')
+            Log.v("filewriter", "Write CSV successfully!")
+        } catch (e: Exception) {
+            Log.v("filewriter", "Writing CSV error!")
+            e.printStackTrace()
+        }
+
+        finally {
+
+
+            try {
+                fileWriter!!.flush()
+                fileWriter.close()
+            } catch (e: IOException) {
+                Log.v("filewriter", "Flushing/closing error!")
+                e.printStackTrace()
+            }
+        }
+    }
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             val intent = Intent(this, MainActivity2::class.java)
             intent.putExtra("sunTime", timesun)
             startActivity(intent)
-            // Save the data in here
+            SaveData("SunName", "ImageName")
         }
     }
 
