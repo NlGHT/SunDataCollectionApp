@@ -1,6 +1,8 @@
 package com.example.sundatacollectionapp
 
 import android.Manifest
+import android.app.Activity
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -19,6 +21,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -30,7 +33,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class MainActivity : AppCompatActivity(), SensorEventListener  {
-    private val REQUEST_IMAGE_CAPTURE = 1
+    private val REQUEST_IMAGE_CAPTURE = 0
     private lateinit var currentPhotoPath: String
     private var timesun: String? = null
     private lateinit var mSensorManager: SensorManager
@@ -48,7 +51,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener  {
     private var mMagneticField = FloatArray(3)
     private var sGravity: Sensor? = null
     private var mGravity = FloatArray(3)
-    private var resume = false;
+    private var resume = true;
 
     private lateinit var locationManager: LocationManager
     private lateinit var locationListener: LocationListener
@@ -56,6 +59,28 @@ class MainActivity : AppCompatActivity(), SensorEventListener  {
     private var latitude: Double? = 0.0
     private var longitude: Double? = 0.0
     private var gpsRunning = false;
+
+
+
+    private var rotation: String? = null
+    private var acc_valuex: String? = null
+    private var acc_valuey: String? = null
+    private var acc_valuez: String? = null
+
+    private var ambtemp_value: String? = null;
+    private var light_value: String? = null;
+    private var gyroscope_valuex:String? = null
+    private var gyroscope_valuey:String? = null
+    private var gyroscope_valuez:String? = null
+
+    private var gravity_value:String? = null
+    private var magnetic_value:String? = null
+    private var pressure_value:String? = null
+
+    private var getSensorValues = false
+
+
+
 
 
 
@@ -70,7 +95,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener  {
 
 
         findViewById<Button>(R.id.btnSun).setOnClickListener { view ->
-            dispatchTakePictureIntent()
+            dispatchTakePictureIntent(Activity.RESULT_CANCELED)
 
         }
 
@@ -84,6 +109,14 @@ class MainActivity : AppCompatActivity(), SensorEventListener  {
         sGyroscope = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE)
         sAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
         sAmbTemp = mSensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE)
+
+        Log.v("rotation", sRotationVectors.toString())
+        Log.v("amb", sAmbientLight.toString())
+        Log.v("magnetic", sMagneticField.toString())
+        Log.v("gravity", sGravity.toString())
+        Log.v("gyro", sGyroscope.toString())
+        Log.v("acc", sAccelerometer.toString())
+        Log.v("amb light", sAmbTemp.toString())
 
         // Location
         locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
@@ -184,21 +217,91 @@ class MainActivity : AppCompatActivity(), SensorEventListener  {
     }
 
     override fun onSensorChanged(event: SensorEvent?) {
-        if (event != null && resume) {
-            when (event.sensor.type) {
-                Sensor.TYPE_ROTATION_VECTOR -> SensorManager.getRotationMatrixFromVector(
-                    rotationMatrix,
-                    event.values
+        if (event != null) {
+            if (event.sensor.type == Sensor.TYPE_ACCELEROMETER) {
+                 var acc_valx = event.values[0].toString();
+                acc_valuex = acc_valx
+                var acc_valy = event.values[1].toString();
+                acc_valuey = acc_valy
+                var acc_valz = event.values[2].toString();
+                acc_valuez = acc_valz
+                Log.v("baby", "oooh")
+
+            }
+            if (event.sensor.type == Sensor.TYPE_MAGNETIC_FIELD) {
+                 var magnetic_val = event.values[0].toString();
+                magnetic_value = magnetic_val
+
+            }
+            if (event.sensor.type == Sensor.TYPE_AMBIENT_TEMPERATURE) {
+                 var ambtemp_val= event.values[0].toString();
+                ambtemp_value = ambtemp_val
+
+
+            }
+            if (event.sensor.type == Sensor.TYPE_LIGHT) {
+                var light_val = event.values[0].toString();
+                light_value = light_val
+
+            }
+            if (event.sensor.type == Sensor.TYPE_PRESSURE) {
+                var pressure_val= event.values[0].toString();
+                pressure_value = pressure_val
+
+            }
+            if (event.sensor.type == Sensor.TYPE_GYROSCOPE) {
+                var gyroscope_valx = event.values[0].toString();
+                gyroscope_valuex = gyroscope_valx
+                var gyroscope_valy = event.values[1].toString();
+                gyroscope_valuey = gyroscope_valy
+                var gyroscope_valz = event.values[2].toString();
+                gyroscope_valuez = gyroscope_valz
+
+            }
+            if(event.sensor.type == Sensor.TYPE_GRAVITY){
+                var gravity_val = event.values[0].toString()
+                gravity_value = gravity_val
+            }
+
+            if (getSensorValues == true) {
+                Log.v("hola", "ola")
+                Log.v("ambtag", light_value.toString())
+                Log.v("magnetictag", magnetic_value.toString())
+                Log.v("gravitytag", gravity_value.toString())
+                Log.v(
+                    "gyrotag",
+                    "x" + gyroscope_valuex.toString() + " y:" + gyroscope_valuey.toString() + " z:" + gyroscope_valuez.toString()
                 )
-                Sensor.TYPE_LIGHT -> this.fAmbientLight = event.values[0]
-                Sensor.TYPE_MAGNETIC_FIELD -> this.mMagneticField = event.values
-                Sensor.TYPE_GRAVITY -> this.mGravity = event.values
-                Sensor.TYPE_GYROSCOPE -> this.vGyroscope = event.values
-                Sensor.TYPE_ACCELEROMETER -> this.vAccellerometer = event.values
-                Sensor.TYPE_AMBIENT_TEMPERATURE -> this.fAmbTemp = event.values[0]
+                Log.v(
+                    "acctag",
+                    "x" + acc_valuex.toString() + " y:" + acc_valuey.toString() + "z " + acc_valuez.toString()
+                )
+                Log.v("amblighttag", ambtemp_value.toString())
+
+                getSensorValues = false
             }
         }
-    }
+
+        //Log.v("rotation)
+
+
+        /*
+        when (event.sensor.type) {
+            Sensor.TYPE_ROTATION_VECTOR -> SensorManager.getRotationMatrixFromVector(
+                rotationMatrix,
+                event.values
+            )
+            Sensor.TYPE_LIGHT -> this.fAmbientLight = event.values[0]
+            Sensor.TYPE_MAGNETIC_FIELD -> this.mMagneticField = event.values
+            Sensor.TYPE_GRAVITY -> this.mGravity = event.values
+            Sensor.TYPE_GYROSCOPE -> this.vGyroscope = event.values
+            Sensor.TYPE_ACCELEROMETER -> this.vAccellerometer = event.values
+            Sensor.TYPE_AMBIENT_TEMPERATURE -> this.fAmbTemp = event.values[0]
+
+
+        }
+         */
+}
 
     override fun onResume() {
         super.onResume()
@@ -210,7 +313,11 @@ class MainActivity : AppCompatActivity(), SensorEventListener  {
         mSensorManager.registerListener(this, sAccelerometer, SensorManager.SENSOR_DELAY_NORMAL)
         mSensorManager.registerListener(this, sAmbTemp, SensorManager.SENSOR_DELAY_NORMAL)
 
+        //Log.v("rotation", sRotationVecto)
+
+
         // Start the location updates when entering the app again
+
         startLocation()
     }
 
@@ -228,36 +335,60 @@ class MainActivity : AppCompatActivity(), SensorEventListener  {
             }
     }
 
-    private fun dispatchTakePictureIntent() {
+    private fun dispatchTakePictureIntent(resultCode: Int) {
         Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
             // Ensure that there's a camera activity to handle the intent
             takePictureIntent.resolveActivity(packageManager)?.also {
                 // Create the File where the photo should go
+
                 val photoFile: File? = try {
                     createImageFile()
                 } catch (ex: IOException) {
                     // Error occurred while creating the File
                     null
                 }
+
                 // Continue only if the File was successfully created
                 photoFile?.also {
+                    getSensorValues = true
                     val photoURI: Uri = FileProvider.getUriForFile(
                         this,
                         BuildConfig.APPLICATION_ID + ".provider",
                         it
                     )
                     takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+                    startActivityForResult(takePictureIntent, RESULT_OK)
                     startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
-                }
 
+                }
                 galleryAddPic()
             }
+
+/*
+        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        try {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
+            Log.v("hura", "huraa")
+            val photoFile: File = createImageFile()
+            val photoURI: Uri = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".provider", photoFile)
+            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+            galleryAddPic()
+
+        } catch (e: ActivityNotFoundException) {
+            // display error state to the user
+        }
+        */
+
         }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        /*if (resultCode == Activity.RESULT_OK){
+           getSensorValues = true
+        }*/
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            getSensorValues = true
             val intent = Intent(this, MainActivity2::class.java)
             intent.putExtra("sunTime", timesun)
             startActivity(intent)
